@@ -1707,6 +1707,68 @@ timeDropdown:Add("Night")
 timeDropdown:Add("Day")
 timeDropdown:Add("Midnight")
 
+local Player = window:AddTab("Player")
+ 
+        Player:AddLabel("Local Player")
+        local walkSpeedValue = 16
+        Player:AddTextBox("WalkSpeed", function(text)
+            local speed = tonumber(text)
+            if speed and speed >= 1 and speed <= 500 then
+                walkSpeedValue = speed
+            end
+        end)
+ 
+        local setSpeed = false
+        Player:AddSwitch("Set Speed", function(state)
+            setSpeed = state
+            while setSpeed do
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = walkSpeedValue
+                task.wait(0.1)
+            end
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end)
+ 
+        local jumpPowerValue = 50
+        Player:AddTextBox("JumpPower", function(text)
+            local jump = tonumber(text)
+            if jump then
+                jumpPowerValue = jump
+            end
+        end)
+ 
+        local applyJumpPower = false
+        Player:AddSwitch("Apply JumpPower", function(state)
+            applyJumpPower = state
+            local humanoid = game.Players.LocalPlayer.Character.Humanoid
+            humanoid.UseJumpPower = true
+            humanoid.JumpPower = applyJumpPower and jumpPowerValue or 50
+        end)
+ 
+        local sizeValue = 1
+        Player:AddTextBox("Size", function(text)
+            local size = tonumber(text)
+            if size and size >= 1 and size <= 100 then
+                sizeValue = size
+            end
+        end)
+ 
+        local setSize = false
+        Player:AddSwitch("Set Sizes", function(state)
+            setSize = state
+            local char = game.Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    for _, scale in pairs({"BodyDepthScale", "BodyHeightScale", "BodyWidthScale", "HeadScale"}) do
+                        local scaleInstance = humanoid:FindFirstChild(scale)
+                        if scaleInstance then
+                            scaleInstance.Value = state and sizeValue or 1
+                        end
+                    end
+                end
+            end
+        end)
+
 local teleportTab = window:AddTab("Teleport")
 
 teleportTab:AddButton("Spawn", function()
@@ -1864,3 +1926,8 @@ teleportTab:AddButton("Brawl Regular", function()
         Duration = 0
     })
 end)
+
+local Credit = window:AddTab("Credits")
+ 
+Credit:AddLabel("FusionX Free Version")
+Credit:AddLabel("Made By Sad")
