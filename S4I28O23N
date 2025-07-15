@@ -382,6 +382,24 @@ end
 
 local opThingsFolder = mainTab:AddFolder("Anti-Fling")
 
+opThingsFolder:AddSwitch("Lock Position", function(Value)
+    if Value then
+        
+        local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        getgenv().posLock = game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = currentPos
+            end
+        end)
+    else
+        
+        if getgenv().posLock then
+            getgenv().posLock:Disconnect()
+            getgenv().posLock = nil
+        end
+    end
+end)
+
 opThingsFolder:AddSwitch("Anti Knockback", function(Value)
     if Value then
         local playerName = game.Players.LocalPlayer.Name
@@ -407,7 +425,7 @@ rebirthsFolder:AddTextBox("Rebirth Target", function(text)
     local newValue = tonumber(text)
     if newValue and newValue > 0 then
         targetRebirthValue = newValue
-        updateStats() -- Call the stats update function
+        updateStats()
         
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Objetivo Actualizado",
