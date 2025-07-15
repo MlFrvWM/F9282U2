@@ -518,7 +518,7 @@ local teleportSwitch = rebirthsFolder:AddSwitch("Auto Teleport to Muscle King", 
     end
 end, "Teletransporte continuo al Rey MÃƒÆ’Ã‚Âºsculo")
 
-local autoEquipToolsFolder = farmPlusTab:AddFolder("Auto Equip Tools")
+local autoEquipToolsFolder = mainTab:AddFolder("Auto Equip Tools")
 
 autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
     local gamepassFolder = game:GetService("ReplicatedStorage").gamepassIds
