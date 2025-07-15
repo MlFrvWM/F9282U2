@@ -1931,3 +1931,8 @@ local Credit = window:AddTab("Credits")
  
 Credit:AddLabel("FusionX Free Version")
 Credit:AddLabel("Made By Sad")
+Credit:AddLabel("Discord Server:")
+ 
+        Credit:AddButton("Copy Link", function()
+            setclipboard("https://discord.gg/TCsaTKQ66q")
+        end)
