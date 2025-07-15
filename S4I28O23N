@@ -23,7 +23,7 @@ end
 setupAntiAFK()
 
 local window = library:AddWindow("FusionX | Free Version", {
-    main_color = Color3.fromRGB(0, 0, 0),
+    main_color = Color3.fromRGB(82, 130, 34),
     min_size = Vector2.new(700, 900),
     can_resize = true,
 })
