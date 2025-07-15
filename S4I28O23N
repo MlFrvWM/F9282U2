@@ -967,7 +967,7 @@ local pets = window:AddTab("Pets")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local selectedPet = "Neon Guardian"
-local petDropdown = pets:AddDropdown("Seleccionar Mascota", function(text)
+local petDropdown = pets:AddDropdown("Select Pet", function(text)
     selectedPet = text
     print("Mascota seleccionada: " .. text)
 end)
