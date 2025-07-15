@@ -1600,6 +1600,89 @@ local Player = window:AddTab("Player")
             end
         end)
 
+local ViewStats = window:AddTab("Spy stats")
+ 
+local targetPlayer = nil
+ 
+        local textbox = ViewStats:AddTextBox("Target Name", function(text)
+            local player = game.Players:FindFirstChild(text)
+            if player then
+                targetPlayer = player
+            else
+                targetPlayer = nil
+                resetTargetStats()
+            end
+        end)
+ 
+        local labels = {
+            ViewStats = ViewStats:AddLabel("View Stats:"),
+            StrengthLabel = ViewStats:AddLabel("Strength: 0"),
+            DurabilityLabel = ViewStats:AddLabel("Durability: 0"),
+            AgilityLabel = ViewStats:AddLabel("Agility: 0"),
+            RebirthsLabel = ViewStats:AddLabel("Rebirths: 0"),
+            KillsLabel = ViewStats:AddLabel("Kills: 0"),
+            EvilKarmaLabel = ViewStats:AddLabel("Evil Karma: 0"),
+            GoodKarmaLabel = ViewStats:AddLabel("Good Karma: 0"),
+            TargetPetsLabel = ViewStats:AddLabel("Target Equipped Pets:")
+        }
+ 
+        for i = 1, 8 do
+            labels["Pet" .. i .. "Label"] = ViewStats:AddLabel("Pet" .. i .. ": N/A")
+        end
+ 
+        local function updateTargetStats()
+            if not targetPlayer then return end
+ 
+            local leaderstats = targetPlayer:FindFirstChild("leaderstats")
+            local goodKarma = targetPlayer:FindFirstChild("goodKarma")
+            local evilKarma = targetPlayer:FindFirstChild("evilKarma")
+            local equippedPets = targetPlayer:FindFirstChild("equippedPets")
+ 
+            if leaderstats then
+                labels.StrengthLabel.Text = "Strength: " .. abbreviateNumber(leaderstats:FindFirstChild("Strength") and leaderstats.Strength.Value or 0)
+                labels.DurabilityLabel.Text = "Durability: " .. abbreviateNumber(targetPlayer:FindFirstChild("Durability") and targetPlayer.Durability.Value or 0)
+                labels.AgilityLabel.Text = "Agility: " .. abbreviateNumber(targetPlayer:FindFirstChild("Agility") and targetPlayer.Agility.Value or 0)
+                labels.RebirthsLabel.Text = "Rebirths: " .. abbreviateNumber(leaderstats:FindFirstChild("Rebirths") and leaderstats.Rebirths.Value or 0)
+                labels.KillsLabel.Text = "Kills: " .. abbreviateNumber(leaderstats:FindFirstChild("Kills") and leaderstats.Kills.Value or 0)
+            end
+ 
+            labels.EvilKarmaLabel.Text = "Evil Karma: " .. abbreviateNumber(evilKarma and evilKarma.Value or 0)
+            labels.GoodKarmaLabel.Text = "Good Karma: " .. abbreviateNumber(goodKarma and goodKarma.Value or 0)
+ 
+            if equippedPets then
+                for i = 1, 8 do
+                    local pet = equippedPets:FindFirstChild("Pet" .. i)
+                    labels["Pet" .. i .. "Label"].Text = "Pet" .. i .. ": " .. (pet and pet.Value or "N/A")
+                end
+            else
+                for i = 1, 8 do
+                    labels["Pet" .. i .. "Label"].Text = "Pet" .. i .. ": N/A"
+                end
+            end
+        end
+ 
+        local function resetTargetStats()
+            labels.StrengthLabel.Text = "Strength: 0"
+            labels.DurabilityLabel.Text = "Durability: 0"
+            labels.AgilityLabel.Text = "Agility: 0"
+            labels.RebirthsLabel.Text = "Rebirths: 0"
+            labels.KillsLabel.Text = "Kills: 0"
+            labels.EvilKarmaLabel.Text = "Evil Karma: 0"
+            labels.GoodKarmaLabel.Text = "Good Karma: 0"
+ 
+            for i = 1, 8 do
+                labels["Pet" .. i .. "Label"].Text = "Pet" .. i .. ": N/A"
+            end
+        end
+ 
+        task.spawn(function()
+            while task.wait(0.1) do
+                if targetPlayer then
+                    updateTargetStats()
+                end
+            end
+        end)
+
 local teleportTab = window:AddTab("Teleport")
 
 teleportTab:AddButton("Spawn", function()
