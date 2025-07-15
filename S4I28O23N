@@ -419,105 +419,6 @@ opThingsFolder:AddSwitch("Anti Knockback", function(Value)
     end
 end)
 
-local rebirthsFolder = mainTab:AddFolder("Rebirths")
-
-rebirthsFolder:AddTextBox("Rebirth Target", function(text)
-    local newValue = tonumber(text)
-    if newValue and newValue > 0 then
-        targetRebirthValue = newValue
-        updateStats()
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Objetivo Actualizado",
-            Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
-            Duration = 0
-        })
-    else
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Entrada InvÃƒÆ’Ã‚Â¡lida",
-            Text = "Por favor ingresa un nÃƒÆ’Ã‚Âºmero vÃƒÆ’Ã‚Â¡lido mayor que 0",
-            Duration = 0
-        })
-    end
-end)
-
-local infiniteSwitch
-
-local targetSwitch = rebirthsFolder:AddSwitch("Auto Rebirth Target", function(bool)
-    _G.targetRebirthActive = bool
-    
-    if bool then
-        if _G.infiniteRebirthActive and infiniteSwitch then
-            infiniteSwitch:Set(false)
-            _G.infiniteRebirthActive = false
-        end
-        
-        spawn(function()
-            while _G.targetRebirthActive and wait(0.1) do
-                local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
-                
-                if currentRebirths >= targetRebirthValue then
-                    targetSwitch:Set(false)
-                    _G.targetRebirthActive = false
-                    
-                    game:GetService("StarterGui"):SetCore("SendNotification", {
-                        Title = "Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
-                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
-                        Duration = 5
-                    })
-                    
-                    break
-                end
-                
-                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-            end
-        end)
-    end
-end, "Renacimiento automÃƒÆ’Ã‚Â¡tico hasta alcanzar el objetivo")
-
-infiniteSwitch = rebirthsFolder:AddSwitch("Auto Rebirth (Infinite)", function(bool)
-    _G.infiniteRebirthActive = bool
-    
-    if bool then
-        if _G.targetRebirthActive and targetSwitch then
-            targetSwitch:Set(false)
-            _G.targetRebirthActive = false
-        end
-        
-        spawn(function()
-            while _G.infiniteRebirthActive and wait(0.1) do
-                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-            end
-        end)
-    end
-end, "Renacimiento continuo sin parar")
-
-local sizeSwitch = rebirthsFolder:AddSwitch("Auto Size 1", function(bool)
-    _G.autoSizeActive = bool
-    
-    if bool then
-        spawn(function()
-            while _G.autoSizeActive and wait() do
-                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
-            end
-        end)
-    end
-end, "Establece el tamaÃƒÆ’Ã‚Â±o del personaje a 1 continuamente")
-
-local teleportSwitch = rebirthsFolder:AddSwitch("Auto Teleport to Muscle King", function(bool)
-    _G.teleportActive = bool
-    
-    if bool then
-        spawn(function()
-            while _G.teleportActive and wait() do
-                if game.Players.LocalPlayer.Character then
-                    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
-                end
-            end
-        end)
-    end
-end, "Teletransporte continuo al Rey MÃƒÆ’Ã‚Âºsculo")
-
 local autoEquipToolsFolder = mainTab:AddFolder("Auto Equip Tools")
 
 autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
@@ -734,6 +635,105 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         end
     end
 end, "Acelera todas las herramientas")
+
+local rebirths = window:AddTab("Rebirths")
+
+rebirths:AddTextBox("Rebirth Target", function(text)
+    local newValue = tonumber(text)
+    if newValue and newValue > 0 then
+        targetRebirthValue = newValue
+        updateStats()
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Objetivo Actualizado",
+            Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
+            Duration = 0
+        })
+    else
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Entrada InvÃƒÆ’Ã‚Â¡lida",
+            Text = "Por favor ingresa un nÃƒÆ’Ã‚Âºmero vÃƒÆ’Ã‚Â¡lido mayor que 0",
+            Duration = 0
+        })
+    end
+end)
+
+local infiniteSwitch
+
+rebirths:AddSwitch("Auto Rebirth Target", function(bool)
+    _G.targetRebirthActive = bool
+    
+    if bool then
+        if _G.infiniteRebirthActive and infiniteSwitch then
+            infiniteSwitch:Set(false)
+            _G.infiniteRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.targetRebirthActive and wait(0.1) do
+                local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
+                
+                if currentRebirths >= targetRebirthValue then
+                    targetSwitch:Set(false)
+                    _G.targetRebirthActive = false
+                    
+                    game:GetService("StarterGui"):SetCore("SendNotification", {
+                        Title = "Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
+                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
+                        Duration = 5
+                    })
+                    
+                    break
+                end
+                
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "Renacimiento automÃƒÆ’Ã‚Â¡tico hasta alcanzar el objetivo")
+
+rebirths:AddSwitch("Auto Rebirth (Infinite)", function(bool)
+    _G.infiniteRebirthActive = bool
+    
+    if bool then
+        if _G.targetRebirthActive and targetSwitch then
+            targetSwitch:Set(false)
+            _G.targetRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.infiniteRebirthActive and wait(0.1) do
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "Renacimiento continuo sin parar")
+
+rebirths:AddSwitch("Auto Size 1", function(bool)
+    _G.autoSizeActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.autoSizeActive and wait() do
+                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
+            end
+        end)
+    end
+end, "Establece el tamaÃƒÆ’Ã‚Â±o del personaje a 1 continuamente")
+
+rebirths:AddSwitch("Auto Teleport to Muscle King", function(bool)
+    _G.teleportActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.teleportActive and wait() do
+                if game.Players.LocalPlayer.Character then
+                    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
+                end
+            end
+        end)
+    end
+end, "Teletransporte continuo al Rey MÃƒÆ’Ã‚Âºsculo")
 
 local autoRock = window:AddTab("Auto Rock")
 
