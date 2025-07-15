@@ -419,7 +419,7 @@ opThingsFolder:AddSwitch("Anti Knockback", function(Value)
     end
 end)
 
-local rebirthsFolder = farmPlusTab:AddFolder("Rebirths")
+local rebirthsFolder = mainTab:AddFolder("Rebirths")
 
 rebirthsFolder:AddTextBox("Rebirth Target", function(text)
     local newValue = tonumber(text)
