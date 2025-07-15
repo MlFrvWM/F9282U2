@@ -144,7 +144,6 @@ local autoWinBrawlSwitch = autoBrawlsFolder:AddSwitch("Auto Win Brawls", functio
                 local rightHand = character:FindFirstChild("RightHand")
                 
                 for _, player in pairs(Players:GetPlayers()) do
-                    -- Skip if toggle was turned off mid-loop
                     if not getgenv().autoWinBrawl then break end
                     
                     pcall(function()
@@ -214,4 +213,190 @@ autoBrawlsFolder:AddSwitch("Auto Brawls", function(bool)
             end
         end
     end)
+end)
+
+local jungleGymFolder = mainTab:AddFolder("Jungle Gym")
+
+local VIM = game:GetService("VirtualInputManager")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function pressE()
+    VIM:SendKeyEvent(true, "E", false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, "E", false, game)
+end
+
+local function autoLift()
+    while getgenv().working do
+        LocalPlayer.muscleEvent:FireServer("rep")
+        task.wait()
+    end
+end
+
+local function teleportAndStart(machineName, position)
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = position
+        task.wait(0.1)
+        pressE()
+        task.spawn(autoLift)
+    end
+end
+
+jungleGymFolder:AddSwitch("Jungle Bench Press", function(bool)
+    if getgenv().working and not bool then
+        getgenv().working = false
+        return
+    end
+    
+    getgenv().working = bool
+    if bool then
+        teleportAndStart("Bench Press", CFrame.new(-8173, 64, 1898))
+    end
+end)
+
+jungleGymFolder:AddSwitch("Jungle Squat", function(bool)
+    if getgenv().working and not bool then
+        getgenv().working = false
+        return
+    end
+    
+    getgenv().working = bool
+    if bool then
+        teleportAndStart("Squat", CFrame.new(-8352, 34, 2878))
+    end
+end)
+
+jungleGymFolder:AddSwitch("Jungle Pull Ups", function(bool)
+    if getgenv().working and not bool then
+        getgenv().working = false
+        return
+    end
+    
+    getgenv().working = bool
+    if bool then
+        teleportAndStart("Pull Up", CFrame.new(-8666, 34, 2070))
+    end
+end)
+
+jungleGymFolder:AddSwitch("Jungle Boulder", function(bool)
+    if getgenv().working and not bool then
+        getgenv().working = false
+        return
+    end
+    
+    getgenv().working = bool
+    if bool then
+        teleportAndStart("Boulder", CFrame.new(-8621, 34, 2684))
+    end
+end)
+
+local farmGymsFolder = mainTab:AddFolder("Entrenar Gimnasios")
+
+local workoutPositions = {
+    ["Bench Press"] = {
+        ["Eternal Gym"] = CFrame.new(-7176.19141, 45.394104, -1106.31421),
+        ["Legend Gym"] = CFrame.new(4111.91748, 1020.46674, -3799.97217),
+        ["Muscle King Gym"] = CFrame.new(-8590.06152, 46.0167427, -6043.34717)
+    },
+    ["Squat"] = {
+        ["Eternal Gym"] = CFrame.new(-7176.19141, 45.394104, -1106.31421),
+        ["Legend Gym"] = CFrame.new(4304.99023, 987.829956, -4124.2334),
+        ["Muscle King Gym"] = CFrame.new(-8940.12402, 13.1642084, -5699.13477)
+    },
+    ["Deadlift"] = {
+        ["Eternal Gym"] = CFrame.new(-7176.19141, 45.394104, -1106.31421),
+        ["Legend Gym"] = CFrame.new(4304.99023, 987.829956, -4124.2334),
+        ["Muscle King Gym"] = CFrame.new(-8940.12402, 13.1642084, -5699.13477)
+    },
+    ["Pull Up"] = {
+        ["Eternal Gym"] = CFrame.new(-7176.19141, 45.394104, -1106.31421),
+        ["Legend Gym"] = CFrame.new(4304.99023, 987.829956, -4124.2334),
+        ["Muscle King Gym"] = CFrame.new(-8940.12402, 13.1642084, -5699.13477)
+    }
+}
+
+local workoutTypes = {
+    "Bench Press",
+    "Squat",
+    "Deadlift",
+    "Pull Up"
+}
+
+local gymLocations = {
+    "Eternal Gym",
+    "Legend Gym",
+    "Muscle King Gym"
+}
+
+local workoutTranslations = {
+    ["Bench Press"] = "Bench Press",
+    ["Squat"] = "Squat",
+    ["Deadlift"] = "Dead Lift",
+    ["Pull Up"] = "Pull Up"
+}
+
+local gymToggles = {}
+
+for _, workoutType in ipairs(workoutTypes) do
+    local dropdownName = workoutType .. "GymDropdown"
+    local spanishWorkoutName = workoutTranslations[workoutType]
+    
+    local dropdown = farmGymsFolder:AddDropdown(spanishWorkoutName .. " - Gimnasio", function(selected)
+        _G["selected" .. string.gsub(workoutType, " ", "") .. "Gym"] = selected
+    end)
+    
+    for _, gymName in ipairs(gymLocations) do
+        dropdown:Add(gymName)
+    end
+    
+    local toggleName = workoutType .. "GymToggle"
+    local toggle = farmGymsFolder:AddSwitch(spanishWorkoutName, function(bool)
+        getgenv().workingGym = bool
+        getgenv().currentWorkoutType = workoutType
+        
+        if bool then
+            local selectedGym = _G["selected" .. string.gsub(workoutType, " ", "") .. "Gym"] or gymLocations[1]
+            
+            if workoutPositions[workoutType] and workoutPositions[workoutType][selectedGym] then
+                for otherType, otherToggle in pairs(gymToggles) do
+                    if otherType ~= workoutType and otherToggle then
+                        otherToggle:Set(false)
+                    end
+                end
+                
+                teleportAndStart(workoutType, workoutPositions[workoutType][selectedGym])
+            else
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "Error",
+                    Text = "Position not found for " .. workoutType .. " in " .. selectedGym,
+                    Duration = 5
+                })
+            end
+        end
+    end)
+    
+    gymToggles[workoutType] = toggle
+end
+
+local opThingsFolder = mainTab:AddFolder("Anti-Fling")
+
+opThingsFolder:AddSwitch("Anti Knockback", function(Value)
+    if Value then
+        local playerName = game.Players.LocalPlayer.Name
+        local rootPart = game.Workspace:FindFirstChild(playerName):FindFirstChild("HumanoidRootPart")
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(100000, 0, 100000)
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        bodyVelocity.P = 1250
+        bodyVelocity.Parent = rootPart
+    else
+        local playerName = game.Players.LocalPlayer.Name
+        local rootPart = game.Workspace:FindFirstChild(playerName):FindFirstChild("HumanoidRootPart")
+        local existingVelocity = rootPart:FindFirstChild("BodyVelocity")
+        if existingVelocity and existingVelocity.MaxForce == Vector3.new(100000, 0, 100000) then
+            existingVelocity:Destroy()
+        end
+    end
 end)
