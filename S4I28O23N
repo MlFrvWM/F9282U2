@@ -201,7 +201,7 @@ local autoWinBrawlSwitch = autoBrawlsFolder:AddSwitch("Auto Win Brawls", functio
 end)
 
 local godModeToggle = false
-        mainTab:AddFolder("God Mode (Brawl)", function(State)
+autoBrawlsFolder:AddSwitch("God Mode (Brawl)", function(State)
             godModeToggle = State
             if State then
                 task.spawn(function()
