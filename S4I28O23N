@@ -200,20 +200,18 @@ local autoWinBrawlSwitch = autoBrawlsFolder:AddSwitch("Auto Win Brawls", functio
     end)
 end)
 
-autoBrawlsFolder:AddSwitch("Auto Brawls", function(bool)
-    getgenv().autoJoinBrawl = bool
-    
-    task.spawn(function()
-        while getgenv().autoJoinBrawl and task.wait(0.5) do
-            if not getgenv().autoJoinBrawl then break end
-            
-            if game.Players.LocalPlayer.PlayerGui.gameGui.brawlJoinLabel.Visible then
-                game.ReplicatedStorage.rEvents.brawlEvent:FireServer("joinBrawl")
-                game.Players.LocalPlayer.PlayerGui.gameGui.brawlJoinLabel.Visible = false
+local godModeToggle = false
+        Player:AddSwitch("God Mode (Brawl)", function(State)
+            godModeToggle = State
+            if State then
+                task.spawn(function()
+                    while godModeToggle do
+                        game:GetService("ReplicatedStorage").rEvents.brawlEvent:FireServer("joinBrawl")
+                        task.wait(0)
+                    end
+                end)
             end
-        end
-    end)
-end)
+        end)
 
 local jungleGymFolder = mainTab:AddFolder("Jungle Gym")
 
